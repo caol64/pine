@@ -1,0 +1,65 @@
+name: Manual Build C Bindings
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_os:
+        description: 'Select OS to build on'
+        required: true
+        default: 'ubuntu-latest'
+        type: choice
+        options:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+jobs:
+  build:
+    name: Build on ${{ inputs.target_os }}
+    runs-on: ${{ inputs.target_os }}
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python and install Meson + Ninja
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install meson ninja
+
+      - name: Build with Meson
+        working-directory: bindings/c
+        run: |
+          echo "Cleaning old build directory if exists"
+          rm -rf build  # cross-platform in bash
+          meson build
+          cd build
+          ninja
+
+      - name: Set artifact name
+        id: set-name
+        run: |
+          case "${{ inputs.target_os }}" in
+            ubuntu-latest)
+              echo "artifact_name=libpine_c.so" >> $GITHUB_OUTPUT
+              ;;
+            windows-latest)
+              echo "artifact_name=libpine_c.dll" >> $GITHUB_OUTPUT
+              ;;
+            macos-latest)
+              echo "artifact_name=libpine_c.dylib" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "artifact_name=libpine_c" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.set-name.outputs.artifact_name }}
+          path: bindings/c/build/
