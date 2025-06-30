@@ -1,6 +1,7 @@
 import ctypes
 import os
 import platform
+from ctypes import c_void_p, c_uint, c_ulong, c_char, c_bool
 
 
 # we get the correct library extension per os
@@ -18,16 +19,19 @@ elif(cur_os == "Darwin"):
 # refer to bindings/c to build the library.
 libipc = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)),lib))
 
-# we create a new PCSX2Ipc object
+libipc.pine_pcsx2_new.restype = c_void_p
+
+libipc.pine_read.argtypes = [c_void_p, c_uint, c_char, c_bool]
+libipc.pine_read.restype = c_ulong
+
+libipc.pine_get_error.argtypes = [c_void_p]
+libipc.pine_get_error.restype = c_uint
+
+libipc.pine_pcsx2_delete.argtypes = [c_void_p]
+libipc.pine_pcsx2_delete.restype = None
+
 ipc = libipc.pine_pcsx2_new()
-
-# we read an uint8_t from memory location 0x00347D34
-print(libipc.pine_read(ipc, 0x00347D34, 0, False))
-
-# we check for errors
-print("Error (if any): " + str(libipc.pine_get_error(ipc)))
-
-# we delete the object and free the resources
+value = libipc.pine_read(ipc, 0x00347D34, c_char(0), False)
+print("Read:", value)
+print("Error:", libipc.pine_get_error(ipc))
 libipc.pine_pcsx2_delete(ipc)
-
-# for more infos check out the C bindings documentation :D !

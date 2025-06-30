@@ -1114,6 +1114,13 @@ class Shared {
      * Shared Destructor.
      */
     virtual ~Shared() {
+        // *** START OF FIX ***
+        // Close the socket if it was successfully opened.
+        if (sock_state) {
+            close_portable(sock);
+            sock_state = false; // Mark as closed
+        }
+        // *** END OF FIX ***
         // We clean up winsock.
 #ifdef _WIN32
         WSACleanup();

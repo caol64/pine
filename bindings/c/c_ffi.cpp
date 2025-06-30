@@ -218,18 +218,21 @@ void pine_free_batch_command(int cmd) {
 void pine_pcsx2_delete(PINE::PCSX2 *v) {
     for (long unsigned int i = 0; i < batch_commands.size(); i++)
         pine_free_batch_command(i);
+    batch_commands.clear();
     delete v;
 }
 
 void pine_rpcs3_delete(PINE::RPCS3 *v) {
     for (long unsigned int i = 0; i < batch_commands.size(); i++)
         pine_free_batch_command(i);
+    batch_commands.clear();
     delete v;
 }
 
 void pine_duckstation_delete(PINE::DuckStation *v) {
     for (long unsigned int i = 0; i < batch_commands.size(); i++)
         pine_free_batch_command(i);
+    batch_commands.clear();
     delete v;
 }
 }
