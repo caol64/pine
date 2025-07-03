@@ -26,16 +26,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python and install Meson + Ninja
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+            python-version: "3.13"
+
+      - name: Install Meson + Ninja
         run: |
-          python3 -m pip install --upgrade pip --break-system-packages
-          pip install meson ninja --break-system-packages
+          python -m pip install --upgrade pip
+          pip install meson ninja
 
       - name: Build with Meson
         working-directory: bindings/c
         run: |
           echo "Cleaning old build directory if exists"
-          rm -rf build  # cross-platform in bash
+          rm -rf build
           meson build
           cd build
           ninja
