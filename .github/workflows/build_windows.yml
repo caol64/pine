@@ -1,11 +1,10 @@
-name: Manual Build C Bindings
+name: Windows Build (MSVC)
 
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build on ${{ inputs.target_os }}
     runs-on: windows-latest
 
     steps:
@@ -18,9 +17,7 @@ jobs:
             python-version: "3.13"
 
       - name: Install Meson + Ninja
-        run: |
-          python -m pip install --upgrade pip
-          pip install meson ninja
+        run: pip install meson ninja
 
       - name: Set up MSVC developer environment
         uses: microsoft/setup-msvc-dev-cmd@v1
