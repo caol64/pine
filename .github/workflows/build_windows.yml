@@ -31,8 +31,7 @@ jobs:
         run: ninja -C builddir
 
       - name: Upload build artifact
-        working-directory: bindings/c
         uses: actions/upload-artifact@v4
         with:
           name: pine-c-dll
-          path: builddir/libpine_c.dll
+          path: bindings/c/builddir/libpine_c.dll
