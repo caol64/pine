@@ -20,7 +20,7 @@ jobs:
         run: pip install meson ninja
 
       - name: Set up MSVC developer environment
-        uses: microsoft/setup-msvc-dev-cmd@v1
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure project with Meson
         working-directory: bindings/c
