@@ -1,0 +1,39 @@
+name: Manual Build C Bindings
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ inputs.target_os }}
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+            python-version: "3.13"
+
+      - name: Install Meson + Ninja
+        run: |
+          python -m pip install --upgrade pip
+          pip install meson ninja
+
+      - name: Set up MSVC developer environment
+        uses: microsoft/setup-msvc-dev-cmd@v1
+
+      - name: Configure project with Meson
+        working-directory: bindings/c
+        run: meson setup builddir
+
+      - name: Compile with Ninja
+        run: ninja -C builddir
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pine-c-dll-windows
+          path: builddir/libpine_c.dll
